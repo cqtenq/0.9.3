@@ -1211,18 +1211,16 @@ void static PruneOrphanBlocks()
 }
 
 int64_t GetBlockValue(int nHeight, int64_t nFees)
-{
-    int64_t nSubsidy = 50 * COIN;
-    int halvings = nHeight / Params().SubsidyHalvingInterval();
+{    
+    int64_t nSubsidy = 200 * COIN;
+	
+    if(nHeight >= nForkThree || (TestNet()))
+			nSubsidy = 80 * COIN;
 
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return nFees;
+    // Subsidy is cut in half every 2100000 blocks, which will occur approximately every 4 years
+    nSubsidy >>= (nHeight / 1799985); // 200,010 blocks at 200FTC and 1,599,975 at 80FTC
 
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
-
-    return nSubsidy + nFees;
+    return nSubsidy + nFees;    
 }
 
 // Feathercoin: eHRC
